@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TermoMID · Controles de demo</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="/static/css/demo.css">
+</head>
+<body>
+<main class="demo">
+  <header class="demo-cab">
+    <div class="logo"><span class="logo-t">T</span><b>TermoMID</b><span class="suave">· Controles de demostración</span></div>
+    <div class="enlaces"><a href="/centro" target="_blank" rel="noopener">Centro de mando ↗</a><a href="/ciudadano" target="_blank" rel="noopener">App ciudadana ↗</a></div>
+  </header>
+
+  <section class="tarjeta" id="caja-password">
+    <label for="demo-password"><b>Contraseña de demo</b> <span class="suave chico">(variable DEMO_PASSWORD)</span></label>
+    <div class="fila-password">
+      <input id="demo-password" type="password" autocomplete="off">
+      <button id="btn-guardar-password" class="btn btn-marca">Usar</button>
+    </div>
+    <p class="suave chico">Se guarda solo en esta pestaña. Una contraseña incorrecta queda registrada como intento fallido.</p>
+  </section>
+
+  <section class="tarjeta estado-demo">
+    <div><span class="suave chico">Hora simulada</span><b id="demo-hora">—</b></div>
+    <div><span class="suave chico">Ola de calor</span><b id="demo-ola">—</b></div>
+    <div><span class="suave chico">1 día simulado</span><b id="demo-dia">—</b></div>
+  </section>
+
+  <section class="botones-demo">
+    <button class="tarjeta boton-demo" data-demo="ola-on">
+      <b>🔥 Provocar ola de calor</b><span>+5 °C durante 3 días simulados (sube en rampa ~30 s). Aparecen alertas naranja y roja.</span></button>
+    <button class="tarjeta boton-demo" data-demo="ola-off">
+      <b>Terminar ola de calor</b><span>Regresa al clima normal de temporada.</span></button>
+    <button class="tarjeta boton-demo" data-demo="tumbar">
+      <b>📡 Tumbar un sensor</b><span>Un sensor al azar deja de transmitir 2 minutos (KPI de sensores baja).</span></button>
+    <button class="tarjeta boton-demo" data-demo="falso">
+      <b>🕵️ Sensor falso / llave robada</b><span>Lecturas de un sensor inexistente (con HTML en el nombre) y de uno real con llave equivocada. IP ficticia 203.0.113.77.</span></button>
+    <button class="tarjeta boton-demo" data-demo="manipulado">
+      <b>🔧 Sensor manipulado</b><span>Un sensor real reporta 58 °C tres veces → regla SIEM R2 → cuarentena.</span></button>
+    <button class="tarjeta boton-demo" data-demo="fuerza">
+      <b>🔐 Ataque de fuerza bruta</b><span>6 contraseñas falsas desde la IP ficticia 203.0.113.66 → regla SIEM R1 → IP bloqueada 5 min. Tu IP no se bloquea.</span></button>
+    <button class="tarjeta boton-demo restablecer" data-demo="restablecer">
+      <b>↺ Restablecer demo</b><span>Quita ola de calor, bloqueos, cuarentenas y sensores caídos; cierra alertas y refugios. La bitácora se conserva.</span></button>
+  </section>
+
+  <section class="tarjeta">
+    <h2 class="chico">Resultados</h2>
+    <ul id="bitacora" class="bitacora"></ul>
+  </section>
+</main>
+<script src="/static/js/comun.js"></script>
+<script src="/static/js/demo.js"></script>
+</body>
+</html>

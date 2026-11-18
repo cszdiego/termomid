@@ -1,0 +1,22 @@
+/* ===================== Controles de demo ===================== */
+.demo { max-width: 900px; margin: 0 auto; padding: 1rem; display: flex; flex-direction: column; gap: .9rem; }
+.demo-cab { display: flex; justify-content: space-between; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.logo { display: flex; align-items: center; gap: .5rem; }
+.logo-t { width: 30px; height: 30px; border-radius: 7px; background: var(--marca); color: #fff; display: grid; place-items: center; font-weight: 800; }
+.enlaces { display: flex; gap: 1rem; font-size: .9rem; font-weight: 600; }
+.fila-password { display: flex; gap: .5rem; margin-top: .4rem; }
+.fila-password input { flex: 1; min-width: 0; padding: .55rem .7rem; border: 1px solid #cfd6da; border-radius: 8px; }
+.estado-demo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+.estado-demo div { display: flex; flex-direction: column; }
+.estado-demo b { font-size: 1.15rem; }
+.botones-demo { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .75rem; }
+.boton-demo { text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: .3rem; }
+.boton-demo:hover { border-color: var(--marca); }
+.boton-demo:disabled { opacity: .5; cursor: wait; }
+.boton-demo span { font-size: .82rem; color: var(--suave); }
+.boton-demo.restablecer { border-style: dashed; }
+.bitacora { list-style: none; padding: 0; margin: .5rem 0 0; display: flex; flex-direction: column; gap: .4rem; font-size: .84rem; }
+.bitacora li { border-left: 3px solid var(--marca); padding: .3rem .6rem; background: #f7f9f9; border-radius: 0 6px 6px 0; word-break: break-word; }
+.bitacora li.error { border-left-color: var(--rojo); background: var(--rojo-fondo); }
+.bitacora code { font-size: .78rem; }
+@media (max-width: 520px) { .estado-demo b { font-size: 1rem; } }

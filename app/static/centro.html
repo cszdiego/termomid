@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TermoMID · Centro de mando</title>
+  <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="/static/css/centro.css">
+</head>
+<body>
+
+<!-- ======================= LOGIN ======================= -->
+<section id="pantalla-login" class="login-fondo">
+  <form id="form-login" class="tarjeta login" autocomplete="off">
+    <div class="logo"><span class="logo-t">T</span><b>TermoMID</b></div>
+    <h1>Centro de mando</h1>
+    <div class="suave chico">Protección Civil Mérida · prototipo con datos simulados</div>
+    <label for="login-usuario">Usuario</label>
+    <select id="login-usuario">
+      <option value="operador">operador (rol: operador)</option>
+      <option value="supervisor">supervisor (rol: supervisor)</option>
+    </select>
+    <label for="login-password">Contraseña</label>
+    <input id="login-password" type="password" required autocomplete="current-password">
+    <div id="login-error" class="error oculto" role="alert"></div>
+    <button class="btn btn-marca btn-grande" type="submit">Entrar</button>
+    <p class="nota">Cada intento fallido queda en la bitácora de seguridad (5 fallos en 60 s bloquean la IP).
+      En producción se pediría además un segundo factor (MFA).<br>
+      <a href="/ciudadano">Ir a la app ciudadana (pública) →</a></p>
+  </form>
+</section>
+
+<!-- ======================= APLICACIÓN ======================= -->
+<div id="aplicacion" class="oculto">
+  <header class="barra-superior">
+    <div class="logo"><span class="logo-t">T</span><b>TermoMID</b><span class="suave">Centro de mando · Protección Civil Mérida</span></div>
+    <nav class="pestanas" aria-label="Secciones">
+      <button class="pestana activa" data-pestana="mapa">Mapa de riesgo</button>
+      <button class="pestana" data-pestana="alertas">Alertas <span id="cuenta-alertas" class="cuenta oculto"></span></button>
+      <button class="pestana" data-pestana="refugios">Refugios</button>
+      <button class="pestana" data-pestana="sensores">Red de sensores</button>
+      <button class="pestana" data-pestana="seguridad">Seguridad <span id="cuenta-seguridad" class="cuenta oculto"></span></button>
+    </nav>
+    <div class="usuario-zona">
+      <span class="pastilla-simulado">Datos simulados · prototipo</span>
+      <div class="reloj"><b id="reloj-real">—</b><br><span class="suave">Hora simulada <b id="reloj-sim">—</b></span></div>
+      <div class="quien"><span id="avatar" class="avatar">—</span><span id="nombre-usuario">—</span><span id="rol-usuario" class="etiqueta">—</span></div>
+      <button id="btn-salir" class="btn">Salir</button>
+    </div>
+  </header>
+
+  <main class="contenido">
+    <!-- KPIs (siempre visibles) -->
+    <section class="kpis" aria-label="Indicadores">
+      <div id="kpi-manana" class="tarjeta kpi kpi-destacado k-VERDE">
+        <div class="titulo">Nivel de alerta de la ciudad · mañana</div>
+        <div class="valor"><span class="punto"></span><span id="kpi-manana-valor">—</span></div>
+        <div class="detalle" id="kpi-manana-detalle">—</div>
+      </div>
+      <div class="tarjeta kpi">
+        <div class="titulo">Índice de calor máx. (ahora)</div>
+        <div class="valor num"><span id="kpi-ic">—</span><small> °C</small></div>
+        <div class="detalle" id="kpi-ic-detalle">—</div>
+      </div>
+      <div class="tarjeta kpi">
+        <div class="titulo">Personas vulnerables expuestas</div>
+        <div class="valor num" id="kpi-expuestas">—</div>
+        <div class="detalle" id="kpi-expuestas-detalle">65+ en colonias naranja o rojo</div>
+      </div>
+      <div class="tarjeta kpi">
+        <div class="titulo">Sensores IoT reportando</div>
+        <div class="valor num"><span id="kpi-sensores">—</span><small id="kpi-sensores-total"> / 60</small></div>
+        <div class="detalle" id="kpi-sensores-detalle">—</div>
+      </div>
+      <div class="tarjeta kpi">
+        <div class="titulo">Refugios abiertos</div>
+        <div class="valor num"><span id="kpi-refugios">—</span><small id="kpi-refugios-total"></small></div>
+        <div class="detalle">refugios climáticos</div>
+      </div>
+      <div class="tarjeta kpi">
+        <div class="titulo">Alertas por aprobar</div>
+        <div class="valor num" id="kpi-pendientes">—</div>
+        <div class="detalle" id="kpi-pendientes-detalle">—</div>
+      </div>
+    </section>
+
+    <!-- ============ PESTAÑA: MAPA DE RIESGO ============ -->
+    <section id="pestana-mapa" class="seccion">
+      <div class="rejilla-mapa">
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <h2>Índice de Riesgo por Calor por colonia</h2>
+            <span class="suave">celdas agrupadas por colonia</span>
+            <div class="selector derecha" id="selector-horizonte" role="group" aria-label="Horizonte">
+              <button data-h="ahora" class="activo">Ahora</button>
+              <button data-h="+24h">+24 h</button>
+              <button data-h="+48h">+48 h</button>
+              <button data-h="+72h">+72 h</button>
+            </div>
+          </div>
+          <div id="mapa" role="img" aria-label="Mapa de Mérida con el nivel de riesgo por colonia"></div>
+          <div class="capas">
+            <div class="leyenda">
+              <span><i class="cuadro c-VERDE"></i>Verde</span><span><i class="cuadro c-AMARILLO"></i>Amarillo</span>
+              <span><i class="cuadro c-NARANJA"></i>Naranja</span><span><i class="cuadro c-ROJO"></i>Rojo</span>
+              <span><i class="cuadro c-refugio"></i>Refugio</span><span><i class="cuadro c-nodo"></i>Sensor</span>
+            </div>
+            <label><input type="checkbox" id="capa-sensores" checked> Sensores</label>
+            <label><input type="checkbox" id="capa-refugios" checked> Refugios</label>
+            <label><input type="checkbox" id="capa-nombres" checked> Nombres</label>
+          </div>
+        </div>
+        <div class="tarjeta">
+          <div class="tarjeta-titulo"><h2>Requieren acción</h2><span id="cuenta-acciones" class="etiqueta etiqueta-rojo derecha">0 abiertas</span></div>
+          <div id="acciones" class="acciones"></div>
+        </div>
+      </div>
+
+      <div class="rejilla-abajo">
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <h2 id="titulo-grafica">Pronóstico 72 h</h2>
+            <span class="suave">índice de calor por hora simulada · elige una colonia en el mapa o la tabla</span>
+          </div>
+          <div class="grafica-caja"><canvas id="grafica" aria-label="Gráfica del índice de calor"></canvas></div>
+        </div>
+        <div class="tarjeta">
+          <div class="tarjeta-titulo"><h2>Colonias con mayor riesgo</h2><span class="suave">ordenadas por IRC de mañana (+24 h)</span></div>
+          <div class="tabla-envoltura">
+            <table>
+              <thead><tr><th>Colonia</th><th>Ahora</th><th>IRC +24 h</th><th>IC máx +24 h</th><th>Pob. 65+</th><th>Refugio</th><th>Acción sugerida</th></tr></thead>
+              <tbody id="tabla-colonias"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PESTAÑA: ALERTAS (flujo de aprobación) ============ -->
+    <section id="pestana-alertas" class="seccion oculto">
+      <div class="rejilla-alertas">
+        <div class="tarjeta">
+          <div class="tarjeta-titulo"><h2>Alertas</h2><span class="suave">activas primero · una por colonia</span></div>
+          <div id="lista-alertas" class="lista-alertas"></div>
+        </div>
+        <div class="tarjeta" id="detalle-alerta"><div class="vacio">Elige una alerta de la lista.</div></div>
+      </div>
+    </section>
+
+    <!-- ============ PESTAÑA: REFUGIOS ============ -->
+    <section id="pestana-refugios" class="seccion oculto">
+      <div class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Refugios climáticos</h2><span class="suave">se abren al emitir una alerta naranja o roja, o a mano</span></div>
+        <div id="lista-refugios" class="rejilla-tarjetas"></div>
+      </div>
+    </section>
+
+    <!-- ============ PESTAÑA: SENSORES ============ -->
+    <section id="pestana-sensores" class="seccion oculto">
+      <div class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Red de sensores LoRaWAN</h2><span class="suave">60 nodos · más sensores en las colonias más vulnerables</span></div>
+        <div id="resumen-sensores" class="resumen-sensores"></div>
+        <div class="tabla-envoltura">
+          <table>
+            <thead><tr><th>Sensor</th><th>Colonia</th><th>Estado</th><th>Última lectura (hora Mérida)</th><th></th></tr></thead>
+            <tbody id="tabla-sensores"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PESTAÑA: SEGURIDAD ============ -->
+    <section id="pestana-seguridad" class="seccion oculto">
+      <div id="seguridad-sin-permiso" class="tarjeta oculto">
+        <div class="vacio"><b>Acceso restringido.</b><br>Solo el rol <b>supervisor</b> puede ver la bitácora de seguridad (principio de mínimo privilegio).<br>Este intento quedó registrado.</div>
+      </div>
+      <div id="seguridad-contenido">
+        <div class="rejilla-seguridad">
+          <div class="tarjeta">
+            <div class="tarjeta-titulo"><h2>Alertas SIEM</h2><span class="suave">reglas de correlación</span></div>
+            <div id="lista-siem"></div>
+            <div id="ips-bloqueadas" class="chico"></div>
+          </div>
+          <div class="tarjeta">
+            <div class="tarjeta-titulo"><h2>Reglas activas</h2></div>
+            <div class="tabla-envoltura">
+              <table>
+                <thead><tr><th>Regla</th><th>Condición</th><th>Umbral</th><th>Severidad</th><th>Acción</th></tr></thead>
+                <tbody id="tabla-reglas"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="tarjeta">
+          <div class="tarjeta-titulo"><h2>Eventos de seguridad</h2><span class="suave">todo texto se muestra escapado (anti-XSS)</span></div>
+          <div class="tabla-envoltura">
+            <table>
+              <thead><tr><th>Hora (Mérida)</th><th>Severidad</th><th>Tipo</th><th>IP</th><th>Sensor</th><th>Endpoint</th><th>Motivo</th></tr></thead>
+              <tbody id="tabla-eventos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/static/vendor/leaflet/leaflet.js"></script>
+<script src="/static/vendor/chart.umd.min.js"></script>
+<script src="/static/js/comun.js"></script>
+<script src="/static/js/centro.js"></script>
+</body>
+</html>

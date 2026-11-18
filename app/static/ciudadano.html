@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#134f5c">
+  <title>TermoMID · Mi colonia</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/estilos.css">
+  <link rel="stylesheet" href="/static/css/ciudadano.css">
+</head>
+<body class="cuerpo-ciudadano">
+<div class="telefono">
+
+  <!-- Notificación tipo "pantalla de bloqueo" cuando llega un aviso nuevo -->
+  <button id="notificacion" class="notificacion oculto" aria-live="assertive">
+    <span class="noti-cab"><span class="logo-t mini">T</span>TermoMID · ahora</span>
+    <b id="noti-titulo"></b>
+    <span id="noti-texto"></span>
+  </button>
+
+  <header class="cab-ciudadano">
+    <div class="cab-fila">
+      <div class="colonia-elegir">
+        <label for="colonia" class="suave chico" data-es="Mi colonia" data-maya="In kaajal">Mi colonia</label>
+        <select id="colonia" aria-label="Elige tu colonia"><option value="">Elige tu colonia…</option></select>
+      </div>
+      <div class="idioma" role="group" aria-label="Idioma">
+        <button data-idioma="es" class="activo">ES</button>
+        <button data-idioma="maya">Maya</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenido-ciudadano">
+    <!-- ======== Mi colonia ======== -->
+    <section id="vista-colonia">
+      <div id="sin-colonia" class="tarjeta vacio">Elige tu colonia arriba para ver tu nivel de riesgo por calor.</div>
+      <div id="con-colonia" class="oculto">
+        <div id="tarjeta-alerta" class="tarjeta-alerta n-VERDE">
+          <div class="alerta-linea" id="alerta-linea">—</div>
+          <div class="alerta-grande num" id="alerta-ic">—</div>
+          <div class="alerta-sub" id="alerta-sub">—</div>
+          <p class="alerta-rec" id="alerta-rec">—</p>
+        </div>
+
+        <div id="aviso-oficial" class="aviso-oficial oculto"></div>
+
+        <h3 class="subtitulo">Próximas horas</h3>
+        <div id="horas" class="horas"></div>
+        <p id="manana" class="chico suave"></p>
+
+        <ul id="consejos" class="consejos"></ul>
+
+        <div id="refugio" class="tarjeta refugio-ciudadano"></div>
+
+        <div class="botones-fila">
+          <a id="como-llegar" class="btn btn-grande" target="_blank" rel="noopener noreferrer" href="#">Cómo llegar</a>
+          <button class="btn btn-marca btn-grande" data-ir="reportar" data-es="Reportar" data-maya="Ts'áa ojéeltbil">Reportar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== Reportar (anónimo) ======== -->
+    <section id="vista-reportar" class="oculto">
+      <h2 class="titulo-vista" data-es="Reportar" data-maya="Ts'áa ojéeltbil">Reportar</h2>
+      <p class="suave">¿Qué está pasando cerca de ti?</p>
+      <div class="opciones-reporte" id="opciones-reporte">
+        <button class="opcion" data-tipo="SINTOMAS"><span class="ico" data-icono="termometro"></span><span><b>Alguien tiene síntomas por calor</b><small>Mareo, vómito, confusión, piel caliente</small></span></button>
+        <button class="opcion" data-tipo="SIN_LUZ"><span class="ico" data-icono="rayo"></span><span><b>Se fue la luz</b><small>Ayuda a ubicar apagones en ondas de calor</small></span></button>
+        <button class="opcion" data-tipo="SIN_AGUA"><span class="ico" data-icono="agua"></span><span><b>Punto de hidratación sin agua</b><small>Bebederos y refugios</small></span></button>
+        <button class="opcion" data-tipo="PERSONA_SOLA"><span class="ico" data-icono="persona"></span><span><b>Persona mayor sola que necesita visita</b><small>Se canaliza a Protección Civil</small></span></button>
+      </div>
+      <div class="ubicacion"><span>Ubicación</span><b id="ubicacion-colonia">—</b></div>
+      <p class="privacidad">No pedimos tu nombre ni tu teléfono. Tu ubicación se guarda solo a nivel de colonia. Si es una emergencia, llama al 911.</p>
+      <button id="enviar-reporte" class="btn btn-marca btn-grande" disabled>Enviar reporte</button>
+      <p id="reporte-resultado" class="reporte-resultado oculto" role="status"></p>
+    </section>
+
+    <p class="pie">Prototipo académico · <b>datos simulados</b> · hora de Mérida.<br>
+      El texto en maya es una traducción de apoyo que debe validar un hablante nativo.</p>
+  </main>
+
+  <nav class="nav-inferior">
+    <button class="activo" data-ir="colonia"><span class="ico" data-icono="casa"></span><span data-es="Mi colonia" data-maya="In kaajal">Mi colonia</span></button>
+    <button data-ir="reportar"><span class="ico" data-icono="mensaje"></span><span data-es="Reportar" data-maya="Ts'áa ojéeltbil">Reportar</span></button>
+  </nav>
+</div>
+
+<script src="/static/js/comun.js"></script>
+<script src="/static/js/ciudadano.js"></script>
+</body>
+</html>
