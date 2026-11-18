@@ -1,0 +1,23 @@
+# Secretos: NUNCA se suben a GitHub
+.env
+
+# Entorno virtual y caché de Python
+.venv/
+__pycache__/
+*.pyc
+
+# Base de datos local (SQLite)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# PDF del pitch: trae los nombres del equipo y el repositorio es público
+*Pitch*.pdf
+TermoMID___Pitch_ejecutivo_1.pdf
