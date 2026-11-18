@@ -1,0 +1,55 @@
+# render.yaml - Blueprint de Render (infraestructura como código).
+# Crea: 1 servicio web (FastAPI) + 1 base PostgreSQL, ambos en el plan gratuito.
+# Los secretos NO están aquí: Render los genera al azar (generateValue) la primera vez.
+
+services:
+  - type: web
+    name: termomid
+    runtime: python
+    plan: free
+    region: virginia            # la región más cercana a Mérida; debe ser la misma que la base
+    buildCommand: pip install -r requirements.txt
+    # UN SOLO proceso (sin --workers): la ola de calor y los bloqueos de IP viven en memoria.
+    # --no-proxy-headers: la IP real la lee nuestro código (app/seguridad.py, obtener_ip).
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-proxy-headers
+    healthCheckPath: /api/salud
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION     # la misma versión que en local (Render pide la versión completa)
+        value: 3.13.11
+      - key: DATABASE_URL
+        fromDatabase:
+          name: termomid-db
+          property: connectionString
+      # --- Secretos generados al azar por Render ---
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SENSOR_MASTER_KEY
+        generateValue: true
+      - key: OPERADOR_PASSWORD
+        generateValue: true
+      - key: SUPERVISOR_PASSWORD
+        generateValue: true
+      - key: DEMO_PASSWORD
+        generateValue: true
+      # --- Configuración ---
+      - key: CONFIAR_PROXY      # leer la IP real del encabezado X-Forwarded-For de Render
+        value: "true"
+      - key: PROXY_SALTOS
+        value: "1"
+      - key: SIMULADOR_INTERNO
+        value: "true"
+      - key: DIA_SEGUNDOS
+        value: "240"
+      - key: INTERVALO_SEGUNDOS
+        value: "5"
+      - key: RETENCION_HORAS
+        value: "6"
+
+databases:
+  - name: termomid-db
+    plan: free
+    region: virginia
+    databaseName: termomid
+    user: termomid
+    postgresMajorVersion: "16"  # la misma versión con la que se probó en local
