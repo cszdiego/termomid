@@ -35,8 +35,10 @@ services:
       # --- Configuración ---
       - key: CONFIAR_PROXY      # leer la IP real del encabezado X-Forwarded-For de Render
         value: "true"
+      # X-Forwarded-For en Render llega como "cliente, Cloudflare, red interna de Render":
+      # la IP real del cliente es la 3.ª contando desde la derecha (verificado con /api/mi-ip).
       - key: PROXY_SALTOS
-        value: "1"
+        value: "3"
       - key: SIMULADOR_INTERNO
         value: "true"
       - key: DIA_SEGUNDOS
