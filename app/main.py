@@ -54,7 +54,9 @@ async def encabezados_seguridad(request: Request, call_next):
     respuesta = await call_next(request)
     respuesta.headers["X-Content-Type-Options"] = "nosniff"
     respuesta.headers["X-Frame-Options"] = "DENY"
-    respuesta.headers["Referrer-Policy"] = "no-referrer"
+    # A otros sitios solo se envía el dominio (sin la ruta). Los servidores de mapas exigen
+    # el Referer: con "no-referrer" bloqueaban las teselas (error 403).
+    respuesta.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     if not request.url.path.startswith(("/docs", "/redoc", "/openapi.json")):
         # Leaflet y Chart.js están DENTRO del proyecto (app/static/vendor), así que solo se
         # permiten scripts y estilos de nuestro propio servidor. Lo único externo son las

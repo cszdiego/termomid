@@ -209,8 +209,11 @@ const marcadoresRefugio = {};
 
 function iniciarMapa() {
   mapa = L.map("mapa", { preferCanvas: true, scrollWheelZoom: false }).setView([20.985, -89.645], 12);
+  // Mapa base de OpenStreetMap. Su política de uso exige el encabezado Referer: por eso la app
+  // envía "strict-origin-when-cross-origin" (solo el dominio, sin la ruta).
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18, attribution: "© OpenStreetMap",
+    maxZoom: 19, referrerPolicy: "strict-origin-when-cross-origin",
+    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
   }).addTo(mapa);
   capas.celdas = L.layerGroup().addTo(mapa);
   capas.nombres = L.layerGroup().addTo(mapa);
