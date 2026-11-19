@@ -21,3 +21,7 @@ Thumbs.db
 # PDF del pitch: trae los nombres del equipo y el repositorio es público
 *Pitch*.pdf
 TermoMID___Pitch_ejecutivo_1.pdf
+
+# Copias locales de secretos de la nube (no se suben)
+.env.*
+!.env.example
