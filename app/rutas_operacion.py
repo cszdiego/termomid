@@ -123,7 +123,7 @@ def tablero(db: Session = Depends(obtener_db), usuario: dict = Depends(usuario_a
     """Todo lo que el centro de mando necesita en UNA petición (se consulta cada 4 s):
     KPIs, colonias con pronóstico, alertas, refugios, sensores y reportes ciudadanos."""
     colonias = resumen_colonias(db)
-    desde = ahora() - timedelta(seconds=config.DIA_SEGUNDOS)  # último día simulado
+    desde = ahora() - timedelta(hours=24)  # visibles hasta que alguien los atienda (máx. 24 h)
     nombres = {c["id"]: c["nombre"] for c in colonias}
     reportes = db.scalars(select(ReporteCiudadano).where(
         ReporteCiudadano.fecha >= desde, ReporteCiudadano.atendido.is_(False))

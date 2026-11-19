@@ -23,7 +23,7 @@ from app.alertas import cerrar_todas
 from app.database import obtener_db
 from app.ingesta import recibir_lectura
 from app.llaves import llave_sensor
-from app.modelos import Refugio, Sensor
+from app.modelos import Refugio, ReporteCiudadano, Sensor
 from app.motor import GENERADOR
 from app.seguridad import _ips_bloqueadas, registrar_evento, verificar_demo
 from app.simulacion import OLA, reloj
@@ -116,7 +116,7 @@ def fuerza_bruta(db: Session = Depends(obtener_db)):
 def restablecer(db: Session = Depends(obtener_db)):
     """Deja todo listo para repetir la demo desde cero:
     sin ola de calor, sin IPs bloqueadas, sin sensores en cuarentena o caídos,
-    sin alertas activas y con los refugios cerrados.
+    sin alertas activas, con los refugios cerrados y los reportes ciudadanos atendidos.
     La bitácora de seguridad y el historial de alertas SE CONSERVAN (son evidencia)."""
     OLA.desactivar()
     ips = len(_ips_bloqueadas)
@@ -127,7 +127,9 @@ def restablecer(db: Session = Depends(obtener_db)):
         s.estado = "SIN_SENAL"  # vuelve a ACTIVO con su siguiente lectura
         cuarentena += 1
     db.execute(update(Refugio).values(abierto=False, ocupacion=0))
+    reportes = db.execute(update(ReporteCiudadano).where(ReporteCiudadano.atendido.is_(False))
+                          .values(atendido=True)).rowcount
     db.commit()
     alertas = cerrar_todas(db, "Cerrada al restablecer la demo.")
     return {"restablecido": True, "ips_desbloqueadas": ips, "sensores_liberados": cuarentena,
-            "alertas_cerradas": alertas, "ola_calor": False}
+            "alertas_cerradas": alertas, "reportes_atendidos": reportes, "ola_calor": False}
